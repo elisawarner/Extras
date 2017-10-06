@@ -2,13 +2,11 @@ import requests
 import os
 from bs4 import BeautifulSoup
 
-story_dict = {}
-
 os.system('clear')
 
 try:
 	nyt_data = BeautifulSoup(open("nytimes.html",'r'),'html.parser')
-	print("Found cache")
+	print("Information taken from cache")
 except:
 	nyt_data = BeautifulSoup(requests.get("http://www.nytimes.com/pages/todayspaper/index.html").text,'html.parser')
 	f = open("nytimes.html",'w')
@@ -18,8 +16,11 @@ except:
 
 div_one = nyt_data.find_all("div",{"class":"story"})
 
+list_of_stories = []
 print("Story Information")
 for i in range(len(div_one)):
+	story_dict = {}
+
 	print(i+1)
 	story_dict['Title'] = div_one[i].find('h3').text.strip()
 	print("Title: " + story_dict['Title'])
@@ -31,10 +32,15 @@ for i in range(len(div_one)):
 	print("Author: " + story_dict['Author'])
 	
 	try:
-		story_dict['Thumbnail'] = div_one[i].find('img').get('src','No thumbnail source')
+		story_dict['Thumbnail'] = div_one[i].find('img')['src'] #.get('src','No thumbnail source')
 	except:
 		story_dict['Thumbnail'] = ''
 	print('Thumbnail:' + story_dict['Thumbnail'])
 
-if 'Author' in story_dict and 'Title' in story_dict and 'Summary' in story_dict:
-	print("\n\nStories saved to dictionary successfully")
+	list_of_stories.append(story_dict)
+	if 'Author' in story_dict and 'Title' in story_dict and 'Summary' in story_dict:
+		print("\nStory %d saved successfully\n" % (i+1))
+
+#print(list_of_stories)
+
+# Note: You can also make a class where each variable is saved per story
